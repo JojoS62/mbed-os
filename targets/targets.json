@@ -7289,6 +7289,288 @@
             "CONFIG_GPIO_AS_PINRESET"
         ]
 },
+"STM32F407VE_BLACK": {
+    "inherits": ["MCU_STM32"],
+    "core": "Cortex-M4F",
+    "extra_labels_add": [
+        "STM32F4",
+        "STM32F407xE"
+    ],
+    "macros_add": [
+        "STM32F407xx"
+    ],
+    "supported_toolchains": ["ARM", "GCC_ARM", "IAR"],
+    "config": {
+        "clock_source": {
+            "help": "Mask value : USE_PLL_HSE_EXTC (need HW patch) | USE_PLL_HSE_XTAL | USE_PLL_HSI",
+            "value": "USE_PLL_HSE_XTAL|USE_PLL_HSI",
+            "macro_name": "CLOCK_SOURCE"
+        }
+    },
+    "device_has_remove": [
+        "SERIAL_FC"
+    ],
+    "overrides": {
+        "lse_available": 0,
+        "network-default-interface-type": "ETHERNET"
+    },
+    "device_has_add": [
+        "ANALOGOUT", 
+        "MPU", 
+        "TRNG", 
+        "FLASH",
+        "EMAC",
+        "SDIO",
+        "USBDEVICE"
+    ],
+    "components_add": ["SDIO", "SPIF"],
+    "release_versions": ["2", "5"],
+    "device_name": "STM32F407VETx"
+},
+    "BLUEPILL_F103CB": {
+    "inherits": ["MCU_STM32"],
+    "core": "Cortex-M3",
+    "default_toolchain": "GCC_ARM",
+    "extra_labels_add": ["STM32F1", "STM32F103CB"],
+    "config": {
+        "clock_source": {
+            "help": "Mask value : USE_PLL_HSE_EXTC (SYSCLK=72 MHz) | USE_PLL_HSE_XTAL (need HW patch) | USE_PLL_HSI (SYSCLK=64 MHz)",
+            "value": "USE_PLL_HSE_XTAL|USE_PLL_HSI",
+            "macro_name": "CLOCK_SOURCE"
+        }
+    },
+    "supported_toolchains": ["GCC_ARM"],
+    "device_has_add": [
+        "CAN",
+        "SERIAL_ASYNCH",
+        "FLASH"
+    ],
+    "device_has_remove": ["STDIO_MESSAGES", "LPTICKER"]
+},
+"WEACT_F411CE": {
+    "inherits": ["MCU_STM32"],
+    "core": "Cortex-M4F",
+    "macros_add": [
+        "STM32F411xE"
+    ],
+    "extra_labels_add": [
+        "STM32F4",
+        "STM32F411xE"
+    ],
+    "components_add": ["FLASHIAP", "SPIF"],
+    "config": {
+        "clock_source": {
+            "help": "Mask value : USE_PLL_HSE_EXTC | USE_PLL_HSE_XTAL | USE_PLL_HSI",
+            "value": "USE_PLL_HSE_XTAL | USE_PLL_HSI",
+            "macro_name": "CLOCK_SOURCE"
+        },
+        "hse_value": {
+            "value": "25000000",
+            "macro_name": "HSE_VALUE"
+        }
+    },
+    "device_has_add": [
+        "SERIAL_ASYNCH",
+        "FLASH",
+        "MPU",
+        "USBDEVICE"
+    ],
+    "release_versions": ["2", "5"],
+    "device_name": "STM32F411CEUx",
+    "device_has_remove": ["LPTICKER"]
+},
+"DEVEBOX_F407VG": {
+    "inherits": ["MCU_STM32"],
+    "core": "Cortex-M4F",
+    "extra_labels_add": [
+        "STM32F4",
+        "STM32F407xG"
+    ],
+    "macros_add": [
+        "STM32F407xx"
+    ],
+    "supported_toolchains": ["ARM", "GCC_ARM", "IAR"],
+    "config": {
+        "clock_source": {
+            "help": "Mask value : USE_PLL_HSE_EXTC (need HW patch) | USE_PLL_HSE_XTAL | USE_PLL_HSI",
+            "value": "USE_PLL_HSE_XTAL|USE_PLL_HSI",
+            "macro_name": "CLOCK_SOURCE"
+        }
+    },
+    "device_has_remove": [
+        "SERIAL_FC"
+    ],
+    "overrides": {
+        "lse_available": 0,
+        "network-default-interface-type": "ETHERNET"
+    },
+    "device_has_add": [
+        "ANALOGOUT", 
+        "MPU", 
+        "TRNG", 
+        "FLASH",
+        "EMAC",
+        "SDIO",
+        "USBDEVICE"
+    ],
+    "components_add": ["SDIO", "SPIF"],
+    "release_versions": ["2", "5"],
+    "device_name": "STM32F407VG"
+},
+"IMSMU_F407VG": {
+    "inherits": ["MCU_STM32"],
+    "core": "Cortex-M4F",
+    "extra_labels_add": [
+        "STM32F4",
+        "STM32F407xG"
+    ],
+    "macros_add": [
+        "STM32F407xx"
+    ],
+    "supported_toolchains": ["ARM", "GCC_ARM", "IAR"],
+    "config": {
+        "clock_source": {
+            "help": "Mask value : USE_PLL_HSE_EXTC (need HW patch) | USE_PLL_HSE_XTAL | USE_PLL_HSI",
+            "value": "USE_PLL_HSE_EXTC|USE_PLL_HSI",
+            "macro_name": "CLOCK_SOURCE"
+        },
+        "hse_value": {
+            "value": "25000000",
+            "macro_name": "HSE_VALUE"
+        }
+    },
+    "device_has_remove": [
+        "SERIAL_FC"
+    ],
+    "overrides": {
+        "lse_available": 0,
+        "network-default-interface-type": "ETHERNET"
+    },
+    "device_has_add": [
+        "ANALOGOUT", 
+        "MPU", 
+        "TRNG", 
+        "FLASH",
+        "EMAC",
+        "SDIO",
+        "USBDEVICE"
+    ],
+    "components_add": ["SDIO", "SPIF"],
+    "release_versions": ["2", "5"],
+    "device_name": "STM32F407VGTx"
+},
+"IMSLA_F746VG": {
+    "inherits": [
+        "MCU_STM32"
+    ],
+    "core": "Cortex-M7F",
+    "extra_labels_add": [
+        "STM32F7",
+        "STM32F746xG",
+        "STM32F746VG"
+    ],
+    "config": {
+        "d11_configuration": {
+            "help": "Value: PA_7 for the default board configuration, PB_5 in case of solder bridge update (SB121 off/ SB122 on)",
+            "value": "PA_7",
+            "macro_name": "STM32_D11_SPI_ETHERNET_PIN"
+        },
+        "clock_source": {
+            "help": "Mask value : USE_PLL_HSE_EXTC | USE_PLL_HSE_XTAL (need HW patch) | USE_PLL_HSI",
+            "value": "USE_PLL_HSE_EXTC|USE_PLL_HSI",
+            "macro_name": "CLOCK_SOURCE"
+        },
+        "lpticker_lptim": {
+            "help": "This target supports LPTIM. Set value 1 to use LPTIM for LPTICKER, or 0 to use RTC wakeup timer",
+            "value": 1
+        }
+    },
+    "macros_add": [
+        "STM32F746xx",
+        "HSE_VALUE=25000000",
+        "EXTRA_IDLE_STACK_REQUIRED"
+    ],
+    "components_add": [
+        "FLASHIAP"
+    ],
+    "detect_code": [
+        "0816"
+    ],
+    "device_has_add": [
+        "ANALOGOUT",
+        "CAN",
+        "CRC",
+        "EMAC",
+        "SERIAL_ASYNCH",
+        "TRNG",
+        "FLASH",
+        "MPU"
+    ],
+    "release_versions": [
+        "2",
+        "5"
+    ],
+    "device_name": "STM32F746VGTx",
+    "bootloader_supported": true,
+    "overrides": {
+        "lpticker_delay_ticks": 0,
+        "network-default-interface-type": "ETHERNET"
+    }
+},
+"NODE_LPC812": {
+    "core": "Cortex-M0+",
+    "default_toolchain": "ARM",
+    "extra_labels": ["NXP", "LPC81X"],
+    "supported_toolchains": ["ARM", "GCC_ARM"],
+    "inherits": ["LPCTarget"],
+    "device_has": [
+        "I2C",
+        "I2CSLAVE",
+        "INTERRUPTIN",
+        "PWMOUT",
+        "SERIAL",
+        "SERIAL_FC",
+        "SLEEP",
+        "SPI",
+        "SPISLAVE",
+        "USTICKER"
+    ],
+    "overrides": {
+        "boot-stack-size": "0x400"
+    },
+    "c_lib": "small",
+    "release_versions": ["5"],
+    "supported_application_profiles": [
+        "bare-metal"
+    ],
+    "device_name": "LPC812M101JDH20"
+},
+"NODE_LPC824": {
+    "core": "Cortex-M0+",
+    "default_toolchain": "ARM",
+    "extra_labels": ["NXP", "LPC82X"],
+    "supported_toolchains": ["ARM", "GCC_ARM"],
+    "inherits": ["LPCTarget"],
+    "device_has": [
+        "ANALOGIN",
+        "I2C",
+        "I2CSLAVE",
+        "INTERRUPTIN",
+        "PWMOUT",
+        "SERIAL",
+        "SLEEP",
+        "SPI",
+        "SPISLAVE",
+        "USTICKER"
+    ],
+    "c_lib": "small",
+    "release_versions": ["5"],
+    "supported_application_profiles": [
+        "bare-metal"
+    ],
+    "device_name": "LPC824M201JDH20"
+},
+
     "__build_tools_metadata__": {
         "version": "1",
         "public": false
