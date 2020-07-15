@@ -41,35 +41,17 @@ class VSCode(Makefile):
             if directory == ".":
                 all_directories.append("${workspaceFolder}/*")
             else:
-                all_directories.append(directory.replace("./", "${workspaceFolder}/") + "/*")
+                all_directories.append("${workspaceFolder}/" + directory + "/*")
 
         cpp_props = {
             "configurations": [
                 {
                     "name": "Windows",
                     "forcedInclude": [
-                        "${workspaceFolder}/mbed_config.h"
+                        "${workspaceFolder}/BUILD/${workspaceFolderBasename}/debug/mbed_config.h"
                     ],
-                    "compilerPath": self.toolchain.cppc[0],
-                    "intelliSenseMode": "gcc-x64",
-                    "includePath": all_directories,
-                    "defines": [symbol for symbol in self.toolchain.get_symbols()]
-                },
-                {
-                    "name": "Mac",
-                    "forcedInclude": [
-                        "${workspaceFolder}/mbed_config.h"
-                    ],
-                    "compilerPath": self.toolchain.cppc[0],
-                    "includePath": all_directories,
-                    "defines": [symbol for symbol in self.toolchain.get_symbols()]
-                },
-                {
-                    "name": "Linux",
-                    "forcedInclude": [
-                        "${workspaceFolder}/mbed_config.h"
-                    ],
-                    "compilerPath": self.toolchain.cppc[0],
+                    "compilerPath": "c:/Program Files (x86)/GNU Tools ARM Embedded/9 2019-q4-major/bin/arm-none-eabi-g++.exe",
+                    "intelliSenseMode": "gcc-x86",
                     "includePath": all_directories,
                     "defines": [symbol for symbol in self.toolchain.get_symbols()]
                 }
