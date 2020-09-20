@@ -19,6 +19,9 @@
 
 #include "USBPhyHw.h"
 #include "pinmap.h"
+#include "mbed_trace.h"
+#define TRACE_GROUP  "usb-stm32"
+
 
 /* endpoint conversion macros */
 #define EP_TO_LOG(ep)       ((ep) & 0xF)
@@ -63,6 +66,7 @@ void HAL_PCD_SOFCallback(PCD_HandleTypeDef *hpcd)
 #else
     USB_OTG_GlobalTypeDef *USBx = hpcd->Instance;
     uint32_t USBx_BASE = (uint32_t)USBx;
+    tr_info("HAL_PCD_SOFCallback()");
     if (priv->sof_enabled) {
         priv->events->sof((USBx_DEVICE->DSTS & USB_OTG_DSTS_FNSOF) >> 8);
     }
@@ -76,6 +80,7 @@ void HAL_PCD_DataOutStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
     USBPhyHw *priv = ((USBPhyHw *)(hpcd->pData));
     uint8_t endpoint = LOG_OUT_TO_EP(epnum);
     priv->epComplete[EP_TO_IDX(endpoint)] = 1;
+    tr_info("HAL_PCD_DataOutStageCallback()");
 
     if (epnum) {
         priv->events->out(endpoint);
@@ -91,6 +96,7 @@ void HAL_PCD_DataInStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
     USBPhyHw *priv = ((USBPhyHw *)(hpcd->pData));
     uint8_t endpoint = LOG_IN_TO_EP(epnum);
     priv->epComplete[EP_TO_IDX(endpoint)] = 1;
+    tr_info("HAL_PCD_DataInStageCallback()");
 
     if (epnum) {
         priv->events->in(endpoint);
@@ -103,6 +109,7 @@ void HAL_PCD_DataInStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
 /*  weak function redefinition  */
 void HAL_PCD_SetupStageCallback(PCD_HandleTypeDef *hpcd)
 {
+    tr_info("HAL_PCD_SetupStageCallback()");
     USBPhyHw *priv = ((USBPhyHw *)(hpcd->pData));
     priv->events->ep0_setup();
 }
@@ -110,6 +117,7 @@ void HAL_PCD_SetupStageCallback(PCD_HandleTypeDef *hpcd)
 /*  weak function redefinition  */
 void HAL_PCD_SuspendCallback(PCD_HandleTypeDef *hpcd)
 {
+    tr_info("HAL_PCD_SuspendCallback()");
     USBPhyHw *priv = ((USBPhyHw *)(hpcd->pData));
     priv->events->suspend(1);
 }
@@ -117,6 +125,7 @@ void HAL_PCD_SuspendCallback(PCD_HandleTypeDef *hpcd)
 /*  weak function redefinition  */
 void HAL_PCD_ResumeCallback(PCD_HandleTypeDef *hpcd)
 {
+    tr_info("HAL_PCD_ResumeCallback()");
     USBPhyHw *priv = ((USBPhyHw *)(hpcd->pData));
     priv->events->suspend(0);
 }
@@ -124,18 +133,21 @@ void HAL_PCD_ResumeCallback(PCD_HandleTypeDef *hpcd)
 /*  weak function redefinition  */
 void HAL_PCD_ConnectCallback(PCD_HandleTypeDef *hpcd)
 {
+    tr_info("HAL_PCD_ConnectCallback()");
     // Nothing to do
 }
 
 /*  weak function redefinition  */
 void HAL_PCD_DisconnectCallback(PCD_HandleTypeDef *hpcd)
 {
+    tr_info("HAL_PCD_DisconnectCallback()");
     // Nothing to do
 }
 
 /*  weak function redefinition  */
 void HAL_PCD_ResetCallback(PCD_HandleTypeDef *hpcd)
 {
+    tr_info("HAL_PCD_ResetCallback()");
     USBPhyHw *obj = ((USBPhyHw *)(hpcd->pData));
     unsigned int i;
     for (i = 0; i < NB_ENDPOINT; i++) {
@@ -337,6 +349,8 @@ void USBPhyHw::init(USBPhyEvents *events)
     NVIC_SetVector(USBHAL_IRQn, (uint32_t)&_usbisr);
     NVIC_SetPriority(USBHAL_IRQn, 1);
     NVIC_EnableIRQ(USBHAL_IRQn);
+
+    //tr_info("USBPhyHw::init() done.");
 }
 
 void USBPhyHw::deinit()
@@ -350,15 +364,18 @@ void USBPhyHw::deinit()
         sleep_manager_unlock_deep_sleep();
     }
     events = NULL;
+    tr_info("USBPhyHw::deinit() done.");
 }
 
 bool USBPhyHw::powered()
 {
+    tr_info("USBPhyHw::powered()");
     return true;
 }
 
 void USBPhyHw::connect()
 {
+    tr_info("USBPhyHw::connect()");
 #if (MBED_CONF_TARGET_USB_SPEED == USE_USB_NO_OTG)
     // Initializes the USB controller registers
     USB_DevInit(hpcd.Instance, hpcd.Init); // hpcd.Init not used
@@ -378,6 +395,7 @@ void USBPhyHw::connect()
 
 void USBPhyHw::disconnect()
 {
+    tr_info("USBPhyHw::disconnect()");
     /* Disable DP Pull-Up bit to disconnect the Internal PU resistor on USB DP line */
     USB_DevDisconnect(hpcd.Instance);
     wait_us(10000);
@@ -388,33 +406,39 @@ void USBPhyHw::disconnect()
 
 void USBPhyHw::configure()
 {
+    tr_info("USBPhyHw::configure()");
+
     // Not needed
 }
 
 void USBPhyHw::unconfigure()
 {
+    tr_info("USBPhyHw::unconfigure()");
     // Not needed
 }
 
 void USBPhyHw::sof_enable()
 {
+    tr_info("USBPhyHw::sof_enable()");
     sof_enabled = true;
 }
 
 void USBPhyHw::sof_disable()
 {
+    tr_info("USBPhyHw::sof_disable()");
     sof_enabled = false;
 }
 
 void USBPhyHw::set_address(uint8_t address)
 {
+    tr_info("USBPhyHw::set_address()");
     HAL_StatusTypeDef ret = HAL_PCD_SetAddress(&hpcd, address);
     MBED_ASSERT(ret == HAL_OK);
 }
 
 void USBPhyHw::remote_wakeup()
 {
-
+    tr_info("USBPhyHw::remote_wakeup()");
 }
 
 const usb_ep_table_t *USBPhyHw::endpoint_table()
@@ -452,6 +476,7 @@ uint32_t USBPhyHw::ep0_set_max_packet(uint32_t max_packet)
 // read setup packet
 void USBPhyHw::ep0_setup_read_result(uint8_t *buffer, uint32_t size)
 {
+    tr_info("USBPhyHw::ep0_setup_read_result()");
     if (size > MAX_PACKET_SIZE_SETUP) {
         size = MAX_PACKET_SIZE_SETUP;
     }
@@ -461,6 +486,7 @@ void USBPhyHw::ep0_setup_read_result(uint8_t *buffer, uint32_t size)
 
 void USBPhyHw::ep0_read(uint8_t *data, uint32_t size)
 {
+    tr_info("USBPhyHw::ep0_read()");
     HAL_StatusTypeDef ret;
     epComplete[EP_TO_IDX(0x00)] = 2;
     ret = HAL_PCD_EP_Receive(&hpcd, 0x00, data, size > MAX_PACKET_SIZE_EP0 ? MAX_PACKET_SIZE_EP0 : size);
@@ -469,12 +495,14 @@ void USBPhyHw::ep0_read(uint8_t *data, uint32_t size)
 
 uint32_t USBPhyHw::ep0_read_result()
 {
+    tr_info("USBPhyHw::ep0_read_result()");
     epComplete[EP_TO_IDX(0x00)] = 0;
     return HAL_PCD_EP_GetRxCount(&hpcd, 0);
 }
 
 void USBPhyHw::ep0_write(uint8_t *buffer, uint32_t size)
 {
+    tr_info("USBPhyHw::ep0_write()");
     /*  check that endpoint maximum size is not exceeding TX fifo */
     MBED_ASSERT(hpcd.IN_ep[0].maxpacket >= size);
     endpoint_write(0x80, buffer, size);
@@ -482,12 +510,14 @@ void USBPhyHw::ep0_write(uint8_t *buffer, uint32_t size)
 
 void USBPhyHw::ep0_stall()
 {
+    tr_info("USBPhyHw::ep0_stall()");
     endpoint_stall(0x80);
     endpoint_stall(0x00);
 }
 
 bool USBPhyHw::endpoint_add(usb_ep_t endpoint, uint32_t max_packet, usb_ep_type_t type)
 {
+    tr_info("USBPhyHw::endpoint_add()");
 #if (MBED_CONF_TARGET_USB_SPEED != USE_USB_NO_OTG)
     uint32_t len;
 
@@ -508,12 +538,14 @@ bool USBPhyHw::endpoint_add(usb_ep_t endpoint, uint32_t max_packet, usb_ep_type_
 
 void USBPhyHw::endpoint_remove(usb_ep_t endpoint)
 {
+    tr_info("USBPhyHw::endpoint_remove()");
     HAL_StatusTypeDef ret = HAL_PCD_EP_Close(&hpcd, endpoint);
     MBED_ASSERT(ret == HAL_OK);
 }
 
 void USBPhyHw::endpoint_stall(usb_ep_t endpoint)
 {
+    tr_info("USBPhyHw::endpoint_stall()");
     HAL_StatusTypeDef ret;
     ret = HAL_PCD_EP_SetStall(&hpcd, endpoint);
     MBED_ASSERT(ret != HAL_BUSY);
@@ -521,6 +553,7 @@ void USBPhyHw::endpoint_stall(usb_ep_t endpoint)
 
 void USBPhyHw::endpoint_unstall(usb_ep_t endpoint)
 {
+    tr_info("USBPhyHw::endpoint_unstall()");
     HAL_StatusTypeDef ret;
     ret = HAL_PCD_EP_ClrStall(&hpcd, endpoint);
     MBED_ASSERT(ret != HAL_BUSY);
@@ -528,6 +561,7 @@ void USBPhyHw::endpoint_unstall(usb_ep_t endpoint)
 
 bool USBPhyHw::endpoint_read(usb_ep_t endpoint, uint8_t *data, uint32_t size)
 {
+    tr_info("USBPhyHw::endpoint_read()");
     // clean reception end flag before requesting reception
     HAL_StatusTypeDef ret = HAL_PCD_EP_Receive(&hpcd, endpoint, data, size);
     MBED_ASSERT(ret != HAL_BUSY);
@@ -536,6 +570,7 @@ bool USBPhyHw::endpoint_read(usb_ep_t endpoint, uint8_t *data, uint32_t size)
 
 uint32_t USBPhyHw::endpoint_read_result(usb_ep_t endpoint)
 {
+    tr_info("USBPhyHw::endpoint_read_result()");
     if (epComplete[EP_TO_IDX(endpoint)] == 0) {
         /*  no reception possible !!! */
         return 0;
@@ -548,6 +583,7 @@ uint32_t USBPhyHw::endpoint_read_result(usb_ep_t endpoint)
 
 bool USBPhyHw::endpoint_write(usb_ep_t endpoint, uint8_t *data, uint32_t size)
 {
+    tr_info("USBPhyHw::endpoint_write()");
     HAL_StatusTypeDef ret;
     // clean transmission end flag before requesting transmission
     epComplete[EP_TO_IDX(endpoint)] = 2;
@@ -563,6 +599,7 @@ bool USBPhyHw::endpoint_write(usb_ep_t endpoint, uint8_t *data, uint32_t size)
 
 void USBPhyHw::endpoint_abort(usb_ep_t endpoint)
 {
+    tr_info("USBPhyHw::endpoint_abort()");
 #if (TARGET_STM32F2)
     HAL_StatusTypeDef ret = HAL_PCD_EP_Abort(&hpcd, endpoint); // fix me: ST driver should not be modified
 #else
@@ -573,6 +610,7 @@ void USBPhyHw::endpoint_abort(usb_ep_t endpoint)
 
 void USBPhyHw::process()
 {
+    tr_info("USBPhyHw::process()");
     HAL_PCD_IRQHandler(&instance->hpcd);
     // Re-enable interrupt
     NVIC_ClearPendingIRQ(USBHAL_IRQn);
