@@ -1287,14 +1287,16 @@ static HAL_StatusTypeDef USB_CoreReset(USB_OTG_GlobalTypeDef *USBx)
   count = 0U;
   USBx->GRSTCTL |= USB_OTG_GRSTCTL_CSRST;
 
-  do
+  /* Get tick */
+  uint32_t tickstart = HAL_GetTick();
+ 
+  while((USBx->GRSTCTL & USB_OTG_GRSTCTL_CSRST) == USB_OTG_GRSTCTL_CSRST)
   {
-    if (++count > 200000U)
+    if((HAL_GetTick() - tickstart) > 1000UL)
     {
       return HAL_TIMEOUT;
     }
   }
-  while ((USBx->GRSTCTL & USB_OTG_GRSTCTL_CSRST) == USB_OTG_GRSTCTL_CSRST);
 
   return HAL_OK;
 }
