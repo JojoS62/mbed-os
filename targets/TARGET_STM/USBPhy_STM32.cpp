@@ -245,8 +245,9 @@ void USBPhyHw::init(USBPhyEvents *events)
 #elif (MBED_CONF_TARGET_USB_SPEED == USE_USB_OTG_FS)
     hpcd.Instance = USB_OTG_FS;
     hpcd.Init.phy_itface = PCD_PHY_EMBEDDED;
-    hpcd.Init.Sof_enable = 1;
+    hpcd.Init.Sof_enable = ENABLE;
     hpcd.Init.speed = PCD_SPEED_FULL;
+    //hpcd.Init.vbus_sensing_enable = ENABLE;
 
     __HAL_RCC_USB_OTG_FS_CLK_ENABLE();
     map = PinMap_USB_FS;
@@ -350,7 +351,7 @@ void USBPhyHw::init(USBPhyEvents *events)
     NVIC_SetPriority(USBHAL_IRQn, 1);
     NVIC_EnableIRQ(USBHAL_IRQn);
 
-    //tr_info("USBPhyHw::init() done.");
+    tr_info("USBPhyHw::init() done.");
 }
 
 void USBPhyHw::deinit()
