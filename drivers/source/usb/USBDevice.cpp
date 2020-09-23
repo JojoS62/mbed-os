@@ -24,7 +24,7 @@
 #include "mbed_assert.h"
 #include "platform/mbed_error.h"
 
-//#define DEBUG
+#define DEBUG
 
 /* Device status */
 #define DEVICE_STATUS_SELF_POWERED  (1U<<0)
