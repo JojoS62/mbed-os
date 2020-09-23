@@ -202,6 +202,8 @@ void USB_reenumerate()
 
 void USBPhyHw::init(USBPhyEvents *events)
 {
+    tr_info("USBPhyHw::init()");
+
     const PinMap *map = NULL;
 
     NVIC_DisableIRQ(USBHAL_IRQn);
@@ -356,8 +358,6 @@ void USBPhyHw::init(USBPhyEvents *events)
     NVIC_SetVector(USBHAL_IRQn, (uint32_t)&_usbisr);
     NVIC_SetPriority(USBHAL_IRQn, 1);
     NVIC_EnableIRQ(USBHAL_IRQn);
-
-    tr_info("USBPhyHw::init() done.");
 }
 
 void USBPhyHw::deinit()
