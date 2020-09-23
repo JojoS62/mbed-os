@@ -119,6 +119,9 @@ void HAL_PCD_SuspendCallback(PCD_HandleTypeDef *hpcd)
 {
     tr_info("HAL_PCD_SuspendCallback()");
     USBPhyHw *priv = ((USBPhyHw *)(hpcd->pData));
+
+    //__HAL_PCD_GATE_PHYCLOCK(hpcd);
+
     priv->events->suspend(1);
 }
 
@@ -127,6 +130,9 @@ void HAL_PCD_ResumeCallback(PCD_HandleTypeDef *hpcd)
 {
     tr_info("HAL_PCD_ResumeCallback()");
     USBPhyHw *priv = ((USBPhyHw *)(hpcd->pData));
+
+    //__HAL_PCD_UNGATE_PHYCLOCK(hpcd);
+
     priv->events->suspend(0);
 }
 
@@ -387,7 +393,6 @@ void USBPhyHw::connect()
 #endif
 
 #endif
-
     HAL_StatusTypeDef ret = HAL_PCD_Start(&hpcd);
     MBED_ASSERT(ret == HAL_OK);
 
@@ -566,6 +571,7 @@ bool USBPhyHw::endpoint_read(usb_ep_t endpoint, uint8_t *data, uint32_t size)
     // clean reception end flag before requesting reception
     HAL_StatusTypeDef ret = HAL_PCD_EP_Receive(&hpcd, endpoint, data, size);
     MBED_ASSERT(ret != HAL_BUSY);
+    MBED_ASSERT(ret == HAL_OK);
     return true;
 }
 
@@ -590,6 +596,7 @@ bool USBPhyHw::endpoint_write(usb_ep_t endpoint, uint8_t *data, uint32_t size)
     epComplete[EP_TO_IDX(endpoint)] = 2;
     ret = HAL_PCD_EP_Transmit(&hpcd, endpoint, data, size);
     MBED_ASSERT(ret != HAL_BUSY);
+    MBED_ASSERT(ret == HAL_OK);
     // update the status
     if (ret != HAL_OK) {
         return false;
@@ -611,7 +618,7 @@ void USBPhyHw::endpoint_abort(usb_ep_t endpoint)
 
 void USBPhyHw::process()
 {
-    tr_info("USBPhyHw::process()");
+    // tr_info("USBPhyHw::process()");
     HAL_PCD_IRQHandler(&instance->hpcd);
     // Re-enable interrupt
     NVIC_ClearPendingIRQ(USBHAL_IRQn);
