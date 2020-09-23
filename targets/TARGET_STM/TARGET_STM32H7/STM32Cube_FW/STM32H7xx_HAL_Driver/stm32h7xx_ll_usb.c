@@ -1079,8 +1079,11 @@ HAL_StatusTypeDef  USB_DevConnect(USB_OTG_GlobalTypeDef *USBx)
 {
   uint32_t USBx_BASE = (uint32_t)USBx;
 
+  USBx->GCCFG |= USB_OTG_GCCFG_PWRDWN;
+  HAL_Delay(30U);
+
   USBx_DEVICE->DCTL &= ~USB_OTG_DCTL_SDIS;
-  HAL_Delay(180U);
+  HAL_Delay(200U);
 
   return HAL_OK;
 }
