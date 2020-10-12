@@ -208,6 +208,11 @@ void USBPhyHw::init(USBPhyEvents *events)
 
     NVIC_DisableIRQ(USBHAL_IRQn);
 
+    /* GPIO Ports Clock Enable */
+    __HAL_RCC_GPIOH_CLK_ENABLE();
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+
+
     if (this->events == NULL) {
         sleep_manager_lock_deep_sleep();
     }
@@ -358,6 +363,9 @@ void USBPhyHw::init(USBPhyEvents *events)
     NVIC_SetVector(USBHAL_IRQn, (uint32_t)&_usbisr);
     NVIC_SetPriority(USBHAL_IRQn, 1);
     NVIC_EnableIRQ(USBHAL_IRQn);
+
+  /* USER CODE BEGIN USB_DEVICE_Init_PostTreatment */
+  HAL_PWREx_EnableUSBVoltageDetector();
 }
 
 void USBPhyHw::deinit()
