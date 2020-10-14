@@ -1079,11 +1079,8 @@ HAL_StatusTypeDef  USB_DevConnect(USB_OTG_GlobalTypeDef *USBx)
 {
   uint32_t USBx_BASE = (uint32_t)USBx;
 
-  USBx->GCCFG |= USB_OTG_GCCFG_PWRDWN;
-  HAL_Delay(30U);
-
   USBx_DEVICE->DCTL &= ~USB_OTG_DCTL_SDIS;
-  HAL_Delay(200U);
+  HAL_Delay(3U);
 
   return HAL_OK;
 }
@@ -1290,16 +1287,14 @@ static HAL_StatusTypeDef USB_CoreReset(USB_OTG_GlobalTypeDef *USBx)
   count = 0U;
   USBx->GRSTCTL |= USB_OTG_GRSTCTL_CSRST;
 
-  /* Get tick */
-  uint32_t tickstart = HAL_GetTick();
- 
-  while((USBx->GRSTCTL & USB_OTG_GRSTCTL_CSRST) == USB_OTG_GRSTCTL_CSRST)
+  do
   {
-    if((HAL_GetTick() - tickstart) > 1000UL)
+    if (++count > 200000U)
     {
       return HAL_TIMEOUT;
     }
   }
+  while ((USBx->GRSTCTL & USB_OTG_GRSTCTL_CSRST) == USB_OTG_GRSTCTL_CSRST);
 
   return HAL_OK;
 }
