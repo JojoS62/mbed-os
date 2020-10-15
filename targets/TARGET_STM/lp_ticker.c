@@ -169,8 +169,8 @@ void lp_ticker_init(void)
 #if MBED_CONF_TARGET_LSE_AVAILABLE
 
     /* Enable LSE clock */
-    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSE;
-    RCC_OscInitStruct.LSEState = RCC_LSE_ON;
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI;
+    RCC_OscInitStruct.LSIState = RCC_LSI_ON;
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
 
     /* Select the LSE clock as LPTIM peripheral clock */
@@ -179,7 +179,7 @@ void lp_ticker_init(void)
     RCC_PeriphCLKInitStruct.LptimClockSelection = RCC_LPTIMCLKSOURCE_LSE;
 #else
 #if (LPTIM_MST_BASE == LPTIM1_BASE)
-    RCC_PeriphCLKInitStruct.Lptim1ClockSelection = RCC_LPTIMCLKSOURCE_LSE;
+    RCC_PeriphCLKInitStruct.Lptim1ClockSelection = RCC_LPTIMCLKSOURCE_LSI;
 #elif (LPTIM_MST_BASE == LPTIM3_BASE) || (LPTIM_MST_BASE == LPTIM4_BASE) || (LPTIM_MST_BASE == LPTIM5_BASE)
     RCC_PeriphCLKInitStruct.Lptim345ClockSelection = RCC_LPTIMCLKSOURCE_LSE;
 #endif /* LPTIM_MST_BASE == LPTIM1 */
