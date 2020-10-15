@@ -258,7 +258,7 @@ void USBPhyHw::init(USBPhyEvents *events)
 #elif (MBED_CONF_TARGET_USB_SPEED == USE_USB_OTG_FS)
     hpcd.Instance = USB_OTG_FS;
     hpcd.Init.phy_itface = PCD_PHY_EMBEDDED;
-    hpcd.Init.Sof_enable = ENABLE;
+    //hpcd.Init.Sof_enable = ENABLE;
     hpcd.Init.speed = PCD_SPEED_FULL;
     //hpcd.Init.vbus_sensing_enable = ENABLE;
 
