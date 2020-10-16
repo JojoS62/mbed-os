@@ -239,7 +239,7 @@ void USBPhyHw::init(USBPhyEvents *events)
     hpcd.Init.use_external_vbus = DISABLE;
     hpcd.Init.speed = PCD_SPEED_HIGH;
 
-    //__HAL_RCC_USB_OTG_HS_CLK_ENABLE();
+    __HAL_RCC_USB_OTG_HS_CLK_ENABLE();
     __HAL_RCC_USB_OTG_HS_ULPI_CLK_ENABLE();
     map = PinMap_USB_HS;
 
@@ -254,8 +254,12 @@ void USBPhyHw::init(USBPhyEvents *events)
 
     __HAL_RCC_USB_OTG_HS_CLK_ENABLE();
     
-    //__HAL_RCC_USB1_OTG_HS_CLK_SLEEP_ENABLE();
-    __HAL_RCC_USB1_OTG_HS_ULPI_CLK_SLEEP_DISABLE();
+    #ifdef __HAL_RCC_USB1_OTG_FS_ULPI_CLK_SLEEP_DISABLE
+        __HAL_RCC_USB1_OTG_FS_ULPI_CLK_SLEEP_DISABLE();
+    #endif
+    #ifdef __HAL_RCC_USB2_OTG_FS_ULPI_CLK_SLEEP_DISABLE
+        __HAL_RCC_USB2_OTG_FS_ULPI_CLK_SLEEP_DISABLE();
+    #endif
     
     map = PinMap_USB_HS;
 
@@ -268,8 +272,12 @@ void USBPhyHw::init(USBPhyEvents *events)
 
     __HAL_RCC_USB_OTG_FS_CLK_ENABLE();
 
-    __HAL_RCC_USB2_OTG_FS_CLK_SLEEP_ENABLE();
-    __HAL_RCC_USB2_OTG_FS_ULPI_CLK_SLEEP_DISABLE();
+    #ifdef __HAL_RCC_USB1_OTG_FS_ULPI_CLK_SLEEP_DISABLE
+        __HAL_RCC_USB1_OTG_FS_ULPI_CLK_SLEEP_DISABLE();
+    #endif
+    #ifdef __HAL_RCC_USB2_OTG_FS_ULPI_CLK_SLEEP_DISABLE
+        __HAL_RCC_USB2_OTG_FS_ULPI_CLK_SLEEP_DISABLE();
+    #endif
      
     map = PinMap_USB_FS;
 
