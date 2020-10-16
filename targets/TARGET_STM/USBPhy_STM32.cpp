@@ -263,6 +263,9 @@ void USBPhyHw::init(USBPhyEvents *events)
     //hpcd.Init.vbus_sensing_enable = ENABLE;
 
     __HAL_RCC_USB_OTG_FS_CLK_ENABLE();
+    __HAL_RCC_USB2_OTG_FS_CLK_SLEEP_ENABLE();
+    __HAL_RCC_USB2_OTG_FS_ULPI_CLK_SLEEP_DISABLE();
+     
     map = PinMap_USB_FS;
 
 #elif (MBED_CONF_TARGET_USB_SPEED == USE_USB_NO_OTG)
