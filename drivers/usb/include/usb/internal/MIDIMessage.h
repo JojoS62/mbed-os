@@ -273,7 +273,7 @@ public:
     MIDIMessageType type()
     {
         MIDIMessageType message_type;
-        uint8_t min_size;
+        uint8_t min_size = 0;
         switch ((data[1] >> 4) & 0xF) {
             case 0x8:
                 // message, channel
