@@ -51,14 +51,33 @@ endfunction()
 # Parse toolchain generated map file of `target` and display a readable table format.
 #
 function(mbed_generate_map_file target)
-     add_custom_command(
-         TARGET
-             ${target}
-         POST_BUILD
-         COMMAND ${Python3_EXECUTABLE} ${mbed-os_SOURCE_DIR}/tools/memap.py -t ${MBED_TOOLCHAIN} ${CMAKE_CURRENT_BINARY_DIR}/${target}${CMAKE_EXECUTABLE_SUFFIX}.map
-         WORKING_DIRECTORY
-             ${CMAKE_CURRENT_BINARY_DIR}
-)
+    # generate table for screen
+    add_custom_command(
+        TARGET
+            ${target}
+        POST_BUILD
+        COMMAND ${Python3_EXECUTABLE} ${mbed-os_SOURCE_DIR}/tools/memap.py 
+        -t ${MBED_TOOLCHAIN} ${CMAKE_CURRENT_BINARY_DIR}/${target}${CMAKE_EXECUTABLE_SUFFIX}.map 
+        --depth ${MBED_MEMAP_DEPTH} 
+        WORKING_DIRECTORY
+            ${CMAKE_CURRENT_BINARY_DIR}
+    )
+
+    # generate json file
+    if (${MBED_MEMAP_CREATE_JSON})
+        add_custom_command(
+            TARGET
+                ${target}
+            POST_BUILD
+            COMMAND ${Python3_EXECUTABLE} ${mbed-os_SOURCE_DIR}/tools/memap.py 
+            -t ${MBED_TOOLCHAIN} ${CMAKE_CURRENT_BINARY_DIR}/${target}${CMAKE_EXECUTABLE_SUFFIX}.map 
+            --depth ${MBED_MEMAP_DEPTH} 
+            -e json
+            -o ${CMAKE_CURRENT_BINARY_DIR}/${target}${CMAKE_EXECUTABLE_SUFFIX}.memmap.json
+            WORKING_DIRECTORY
+                ${CMAKE_CURRENT_BINARY_DIR}
+    )
+    endif()
 endfunction()
 
 #
