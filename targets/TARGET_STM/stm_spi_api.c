@@ -143,23 +143,22 @@ void init_spi(spi_t *obj)
     struct spi_s *spiobj = SPI_S(obj);
     SPI_HandleTypeDef *handle = &(spiobj->handle);
 
-    __HAL_SPI_DISABLE(handle);
-
     DEBUG_PRINTF("init_spi: instance=0x%8X\r\n", (int)handle->Instance);
     if (HAL_SPI_Init(handle) != HAL_OK) {
         error("Cannot initialize SPI");
     }
+
     /* In some cases after SPI object re-creation SPI overrun flag may not
      * be cleared, so clear RX data explicitly to prevent any transmissions errors */
     spi_flush_rx(obj);
 
     /* in 3-wire case, this avoids starting immediate clock generation */
     if (handle->Init.Direction  == SPI_DIRECTION_1LINE) {
-        //SPI_1LINE_TX(handle);
-        LL_SPI_SetTransferDirection(SPI_INST(obj), LL_SPI_HALF_DUPLEX_TX);
+        SPI_1LINE_TX(handle);
+        //LL_SPI_SetTransferDirection(SPI_INST(obj), LL_SPI_HALF_DUPLEX_TX);
     }
 
-     __HAL_SPI_ENABLE(handle);
+    __HAL_SPI_ENABLE(handle);
 }
 
 SPIName spi_get_peripheral_name(PinName mosi, PinName miso, PinName sclk)
@@ -1150,15 +1149,15 @@ static int spi_master_one_wire_transfer(spi_t *obj, const char *tx_buffer, int t
          */
 
         /* get estimation about one SPI clock cycle */
-        // uint32_t baudrate_period_ns = 1000000000 / spi_get_baudrate(obj);
+        uint32_t baudrate_period_ns = 1000000000 / spi_get_baudrate(obj);
 
-            LL_SPI_Enable(SPI_INST(obj));
         for (int i = 0; i < rx_length; i += word_size) {
-            // core_util_critical_section_enter();
+            core_util_critical_section_enter();
+            LL_SPI_Enable(SPI_INST(obj));
             /* Wait single SPI clock cycle. */
-            //wait_ns(baudrate_period_ns);
-            //LL_SPI_Disable(SPI_INST(obj));
-            // core_util_critical_section_exit();
+            wait_ns(baudrate_period_ns);
+            LL_SPI_Disable(SPI_INST(obj));
+            core_util_critical_section_exit();
 
             msp_wait_readable(obj);
             spi_put_word_to_buffer(rx_buffer + i, bitshift, msp_read_data(obj, bitshift));
@@ -1355,18 +1354,14 @@ static int spi_master_start_asynch_transfer(spi_t *obj, transfer_type_t transfer
 {
     struct spi_s *spiobj = SPI_S(obj);
     SPI_HandleTypeDef *handle = &(spiobj->handle);
-    // bool is16bit = (handle->Init.DataSize == SPI_DATASIZE_16BIT);
     const int bitshift = datasize_to_transfer_bitshift(handle->Init.DataSize);
     MBED_ASSERT(bitshift >= 0);
-    // the HAL expects number of transfers instead of number of bytes
-    // so the number of transfers depends on the container size
-    size_t words;
-
+    obj->spi.transfer_type = transfer_type;
     DEBUG_PRINTF("SPI inst=0x%8X Start: %u, %u\r\n", (int)handle->Instance, transfer_type, length);
 
-    obj->spi.transfer_type = transfer_type;
-
-    words = length >> bitshift;
+    // the HAL expects number of transfers instead of number of bytes
+    // so the number of transfers depends on the container size
+    size_t words = length >> bitshift;
 
     // enable the interrupt
     IRQn_Type irq_n = spiobj->spiIRQ;
@@ -1380,6 +1375,7 @@ static int spi_master_start_asynch_transfer(spi_t *obj, transfer_type_t transfer
     HAL_SPIEx_FlushRxFifo(handle);
 #endif
 
+    __HAL_SPI_DISABLE(handle);
     // enable the right hal transfer
     int rc = 0;
     switch (transfer_type) {
