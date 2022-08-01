@@ -24,6 +24,7 @@
 
 #include <errno.h>
 #include <stdlib.h>
+#include <malloc.h> 
 
 namespace mbed {
 
@@ -155,7 +156,8 @@ extern "C" DWORD get_fattime(void)
 
 extern "C" void *ff_memalloc(UINT size)
 {
-    return malloc(size);
+    return memalign(32, size);
+    // return malloc(size);
 }
 
 extern "C" void ff_memfree(void *p)
@@ -795,7 +797,7 @@ int FATFileSystem::dir_close(fs_dir_t dir)
 ssize_t FATFileSystem::dir_read(fs_dir_t dir, struct dirent *ent)
 {
     FATFS_DIR *dh = static_cast<FATFS_DIR *>(dir);
-    FILINFO finfo;
+    alignas(32) FILINFO finfo;
 
     lock();
     FRESULT res = f_readdir(dh, &finfo);
@@ -832,7 +834,7 @@ void FATFileSystem::dir_seek(fs_dir_t dir, off_t offset)
         f_rewinddir(dh);
     }
     while (dptr < offset) {
-        FILINFO finfo;
+        alignas(32) FILINFO finfo;
         FRESULT res;
 
         res = f_readdir(dh, &finfo);
